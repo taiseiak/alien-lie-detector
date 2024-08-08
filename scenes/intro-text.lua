@@ -1,0 +1,10 @@
+return [[
+Aliens have arrived on Earth.[waitforinput]
+Are they friendly? Are they hostile?[waitforinput]
+You have an ALIEN LIE DETECTOR.[waitforinput]
+Figure out three questions:[waitforinput]
+[dropshadow=2]Are you peaceful?[/dropshadow][waitforinput]
+[dropshadow=2]Do you need Earth's resources?[/dropshadow][waitforinput]
+[dropshadow=2]Do you have weapons?[/dropshadow][waitforinput]
+[shake=10]Good luck.[/shake][waitforinput]
+]]
