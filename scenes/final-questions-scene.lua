@@ -2,40 +2,46 @@ local SelectionBox = require('selection-box')
 local SceneManager = require('scene-manager')
 local ImageManager = require('image-manager')
 
-local SelectTruthOrLieScene = {}
-SelectTruthOrLieScene.__index = SelectTruthOrLieScene
+local FinalQuestionsScene = {}
+FinalQuestionsScene.__index = FinalQuestionsScene
 
-function SelectTruthOrLieScene.new()
+function FinalQuestionsScene.new()
     local self = {
         selectionBoxes = {
             truth = SelectionBox.new(
                 65,
-                20,
+                15,
                 function() SceneManager:setScene(SceneManager.scenes.selectATruth) end),
             lie = SelectionBox.new(
                 65,
-                40,
+                30,
                 function() SceneManager:setScene(SceneManager.scenes.selectALie) end),
+            real = SelectionBox.new(
+                65,
+                45,
+                function() SceneManager:setScene(SceneManager.scenes.finalSelection) end),
         }
     }
     self.selectionBoxes.truth:send("Ask for [color=#00ff00]TRUTH[/color=#00ff00]", 90)
-    self.selectionBoxes.lie:send("Ask for a [color=#ff0000]LIE[/color=#00ff00]", 90)
-    setmetatable(self, SelectTruthOrLieScene)
+    self.selectionBoxes.lie:send("Ask for a [color=#ff0000]LIE[/color=#ff0000]", 90)
+    self.selectionBoxes.real:send("FINAL QUESTIONS", 90)
+    setmetatable(self, FinalQuestionsScene)
     return self
 end
 
-function SelectTruthOrLieScene:reset()
+function FinalQuestionsScene:reset()
     self.selectionBoxes.truth:send("Ask for [color=#00ff00]TRUTH[/color=#00ff00]", 90)
-    self.selectionBoxes.lie:send("Ask for a [color=#ff0000]LIE[/color=#00ff00]", 90)
+    self.selectionBoxes.lie:send("Ask for a [color=#ff0000]LIE[/color=#ff0000]", 90)
+    self.selectionBoxes.real:send("FINAL QUESTIONS", 90)
 end
 
-function SelectTruthOrLieScene:update(dt)
+function FinalQuestionsScene:update(dt)
     for _, box in pairs(self.selectionBoxes) do
         box:update(dt)
     end
 end
 
-function SelectTruthOrLieScene:draw()
+function FinalQuestionsScene:draw()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(ImageManager.images.conceptSprite, 0, 0)
     for _, box in pairs(self.selectionBoxes) do
@@ -43,4 +49,4 @@ function SelectTruthOrLieScene:draw()
     end
 end
 
-return SelectTruthOrLieScene
+return FinalQuestionsScene

@@ -49,7 +49,12 @@ function LieAnswerScene:update(dt)
     end
     if self.text:is_finished() and InputManager:released(InputManager.controls.select) then
         MouseManager:setHover(false)
-        SceneManager:setScene(SceneManager.scenes.selectTruthOrLie)
+        G_questionsAsked = G_questionsAsked + 1
+        if G_questionsAsked > 3 then
+            SceneManager:setScene(SceneManager.scenes.finalQuestions)
+        else
+            SceneManager:setScene(SceneManager.scenes.selectTruthOrLie)
+        end
     end
 end
 

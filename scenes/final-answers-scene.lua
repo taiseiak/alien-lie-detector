@@ -5,10 +5,10 @@ local InputManager = require('input-manager')
 local ImageManager = require('image-manager')
 local MouseManager = require('mouse-manager')
 
-local TruthAnswerScene = {}
-TruthAnswerScene.__index = TruthAnswerScene
+local FinalAnswerScene = {}
+FinalAnswerScene.__index = FinalAnswerScene
 
-function TruthAnswerScene.new()
+function FinalAnswerScene.new()
     local self = {
         text = Text.new("center",
             {
@@ -21,24 +21,24 @@ function TruthAnswerScene.new()
         skyShader = love.graphics.newShader("shaders/sky-shader.fs")
     }
 
-    setmetatable(self, TruthAnswerScene)
+    setmetatable(self, FinalAnswerScene)
     return self
 end
 
-function TruthAnswerScene:send(query)
+function FinalAnswerScene:send(query)
     self.query = query
-    if query == "Are you an alien?" then
-        self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. YES.[/shake][/rainbow]", 90)
-    elseif query == "Are you taking a lie detector?" then
-        self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. OBVIOUSLY, YES.[/shake][/rainbow]", 90)
-    elseif query == "Are you having fun?" then
-        self.text:send("[color=#ff0000]NO.[pause=0.7] WHY WOULD  I[/color]", 90)
+    if query == "Are you peaceful?" then
+        self.text:send("[color=#ff0000]. [pause=0.7]. [pause=0.7]. YES.[/color]", 90)
+    elseif query == "Do you need our resources?" then
+        self.text:send("[color=#ff0000]. [pause=0.7]. [pause=0.7]. NO.[/color]", 90)
+    elseif query == "Do you have weapons?" then
+        self.text:send("[color=#ff0000]NO.[pause=0.7] WEAPONS.[/color]", 90)
     else
-        self.text:send("[shake=1]. [pause=0.7]. [pause=0.7]. Yes.[/shake]", 90)
+        self.text:send("[shake=1]. [pause=0.7]. [pause=0.7].[/shake]", 90)
     end
 end
 
-function TruthAnswerScene:update(dt)
+function FinalAnswerScene:update(dt)
     if not self.query then
         return
     end
@@ -50,15 +50,11 @@ function TruthAnswerScene:update(dt)
     if self.text:is_finished() and InputManager:released(InputManager.controls.select) then
         MouseManager:setHover(false)
         G_questionsAsked = G_questionsAsked + 1
-        if G_questionsAsked > 3 then
-            SceneManager:setScene(SceneManager.scenes.finalQuestions)
-        else
-            SceneManager:setScene(SceneManager.scenes.selectTruthOrLie)
-        end
+        SceneManager:setScene(SceneManager.scenes.finalQuestions)
     end
 end
 
-function TruthAnswerScene:draw()
+function FinalAnswerScene:draw()
     -- Background
     love.graphics.draw(ImageManager.images.conceptSprite, 0, 0)
     if not self.query then
@@ -94,4 +90,4 @@ function TruthAnswerScene:draw()
     love.graphics.setShader()
 end
 
-return TruthAnswerScene
+return FinalAnswerScene

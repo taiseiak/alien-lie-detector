@@ -7,14 +7,19 @@ local SceneManager = require("scene-manager")
 local ImageManager = require("image-manager")
 
 -- [Scenes] --
+local IntroScene = require('scenes.intro-scene')
 local SelectTruthOrLieScene = require("scenes.select-truth-or-lie-scene")
 local TruthSelectionScene = require("scenes.truth-selection-scene")
 local LieSelectionScene = require("scenes.lie-selection-scene")
 local TruthAnswerScene = require("scenes.truth-answer-scene")
 local LieAnswerScene = require("scenes.lie-answer-scene")
+local FinalQuestionScene = require("scenes.final-questions-scene")
+local FinalSelectionScene = require("scenes.final-selection-scene")
+local FinalAnswerScene = require("scenes.final-answers-scene")
 
 G_gameWidth, G_gameHeight = 160, 90
 G_currentTime = 0
+G_questionsAsked = 0
 
 -- [Optimizing locals] --
 local love = love
@@ -47,11 +52,15 @@ function love.load()
     InputManager:init()
     MouseManager:init()
     SceneManager:init({
+        introScene = IntroScene.new(),
         selectTruthOrLieScene = SelectTruthOrLieScene:new(),
         truthSelectionScene = TruthSelectionScene.new(),
         lieSelectionScene = LieSelectionScene.new(),
         truthAnswerScene = TruthAnswerScene.new(),
-        lieAnswerScene = LieAnswerScene.new()
+        lieAnswerScene = LieAnswerScene.new(),
+        finalQuestionScene = FinalQuestionScene.new(),
+        finalSelectionScene = FinalSelectionScene.new(),
+        finalAnswerScene = FinalAnswerScene.new()
     })
 
     startTime = love.timer.getTime()
@@ -65,9 +74,9 @@ function love.load()
     love.graphics.setFont(Fonts.another_dimention)
 
     local windowWidth, windowHeight = love.window.getDesktopDimensions()
-    windowWidth, windowHeight = windowWidth * 0.7, windowHeight * 0.7
+    windowWidth, windowHeight = windowWidth * 0.8, windowHeight * 0.8
     Push:setupScreen(G_gameWidth, G_gameHeight, windowWidth, windowHeight,
-        { fullscreen = false, highdpi = true, pixelperfect = false })
+        { fullscreen = false, highdpi = true, pixelperfect = false, resizable = true })
 
     -- [Calculate scaling factors] --
     local scaleX = windowWidth / G_gameWidth
@@ -84,6 +93,10 @@ function love.load()
     skyShader = love.graphics.newShader("shaders/sky-shader.fs")
 
     -- SceneManager:setScene(SceneManager.scenes.truthAnswer, { query = "Are you an alien?" })
+end
+
+function love.resize(w, h)
+    return Push:resize(w, h)
 end
 
 function love.update(dt)
