@@ -34,8 +34,7 @@ function OutroScene:reset()
         " answers correct[waitforinput]\n"
     if G_answersCorrect >= G_realQuestionsAsked then
         text = text ..
-            "By figuring out the true intentions of the alien you have [rainbow=5]saved earth[/rainbow][waitforinput]\n" ..
-            "[shake=10]Thanks for playing[/shake]"
+            "By figuring out the true intentions of the alien you have [rainbow=5]saved earth[/rainbow]"
     else
         text = text ..
             "By not finding the truth [dropshadow=10]inside[/dropshadow] the alien [color=#ff0000]earth is destoryed[/color][waitforinput]\n" ..
@@ -55,6 +54,8 @@ function OutroScene:update(dt)
             if self.dialogue:is_finished() and G_answersCorrect < G_realQuestionsAsked then
                 SceneManager:fullReset()
                 SceneManager:setScene(SceneManager.scenes.selectTruthOrLie)
+            else
+                SceneManager:setScene(SceneManager.scenes.endScene)
             end
         end
     else

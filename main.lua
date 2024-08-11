@@ -18,6 +18,7 @@ local FinalSelectionScene = require("scenes.final-selection-scene")
 local FinalAnswerScene = require("scenes.final-answers-scene")
 local IsThisTruthScene = require("scenes.is-this-truth-scene")
 local OutroScene = require("scenes.outro-scene")
+local EndScene = require("scenes.end-screen")
 
 G_gameWidth, G_gameHeight = 160, 90
 G_currentTime = 0
@@ -72,7 +73,8 @@ function love.load()
         finalSelectionScene = FinalSelectionScene.new(),
         finalAnswerScene = FinalAnswerScene.new(),
         isThisTruthScene = IsThisTruthScene.new(),
-        outroScene = OutroScene.new()
+        outroScene = OutroScene.new(),
+        endScene = EndScene.new()
     })
 
     G_shader = love.graphics.newShader("shaders/lie-shader.fs")

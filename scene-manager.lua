@@ -12,14 +12,15 @@ SceneManager.scenes = {
     lieAnswer = 'lieAnswer',
     isThisTruth = 'isThisTruth',
     outro = 'outro',
+    endScene = 'endScene'
 }
 
 function SceneManager:init(scenes)
-    self.currentScene = SceneManager.scenes.finalQuestions
+    self.currentScene = SceneManager.scenes.intro
     for key, value in pairs(scenes) do
         self[key] = value
     end
-    -- self.isThisTruthScene:send("truth")
+    self.outroScene:reset()
 end
 
 function SceneManager:update(dt)
@@ -47,6 +48,8 @@ function SceneManager:update(dt)
         SceneManager.isThisTruthScene:update(dt)
     elseif currentScene == SceneManager.scenes.outro then
         SceneManager.outroScene:update(dt)
+    elseif currentScene == SceneManager.scenes.endScene then
+        SceneManager.endScene:update(dt)
     end
 end
 
@@ -95,6 +98,8 @@ function SceneManager:setScene(scene, variables)
         self.isThisTruthScene:send(variables.answer)
     elseif scene == SceneManager.scenes.outro then
         self.outroScene:reset()
+    elseif scene == SceneManager.scenes.endScene then
+        self.endScene:reset()
     end
 end
 
@@ -121,6 +126,8 @@ function SceneManager:draw()
         SceneManager.isThisTruthScene:draw()
     elseif self.currentScene == SceneManager.scenes.outro then
         SceneManager.outroScene:draw()
+    elseif self.currentScene == SceneManager.scenes.endScene then
+        SceneManager.endScene:draw()
     else
         love.graphics.print("Error Empty Scene", 42, G_gameHeight / 2)
     end

@@ -15,6 +15,7 @@ function ImageManager:init(images)
         nextMarker = love.graphics.newImage("assets/sprites/next_marker.png"),
         detectorOutput = love.graphics.newImage("assets/sprites/detector_output.png"),
         isThisTruth = love.graphics.newImage("assets/sprites/is_this_truth_lie.png"),
+        endScreen = love.graphics.newImage("assets/sprites/end_screen.png"),
     }
     for _, image in pairs(self.images) do
         image:setFilter('nearest', 'nearest')
