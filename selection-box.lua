@@ -7,12 +7,13 @@ local SelectionBox = {}
 SelectionBox.__index = SelectionBox
 
 
-function SelectionBox.new(x, y, callback)
+function SelectionBox.new(x, y, callback, disabled)
     local self = {
         x = x,
         y = y,
         callback = callback,
         hovering = false,
+        disabled = disabled,
         normalTextBox = Text.new("left",
             {
                 color = Demichrome_palatte[4],
@@ -43,8 +44,9 @@ end
 function SelectionBox:update(dt)
     if MouseManager.vector.x > self.x1
         and MouseManager.vector.x < self.x2
-        and MouseManager.vector.y > self.y1 - 14
-        and MouseManager.vector.y < self.y2 - 14
+        and MouseManager.vector.y > self.y1 - 8
+        and MouseManager.vector.y < self.y2 - 8
+        and not self.disabled
     then
         if InputManager:released(InputManager.controls.select) and self.callback then
             MouseManager:setHover(false)

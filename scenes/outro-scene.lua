@@ -6,11 +6,11 @@ local InputManager = require('input-manager')
 local ImageManager = require("image-manager")
 local SceneManager = require("scene-manager")
 
-local IntroScene = {}
-IntroScene.__index = IntroScene
-IntroScene.dialogue = require("scenes.intro-text")
+local OutroScene = {}
+OutroScene.__index = OutroScene
+OutroScene.dialogue = require("scenes.intro-text")
 
-function IntroScene.new()
+function OutroScene.new()
     local self = {
         dialogue = Text.new("center",
             {
@@ -21,23 +21,39 @@ function IntroScene.new()
                 adjust_line_height = -2
             })
     }
-    self.dialogue:send(IntroScene.dialogue, G_gameWidth)
-    setmetatable(self, IntroScene)
+    setmetatable(self, OutroScene)
     return self
 end
 
-function IntroScene:reset()
-    self.dialogue:send(IntroScene.dialogue, G_gameWidth, true)
+function OutroScene:reset()
+    local text =
+        "You got " ..
+        G_answersCorrect ..
+        " out of " ..
+        G_realQuestionsAsked ..
+        " answers correct[waitforinput]\n"
+    if G_answersCorrect >= G_realQuestionsAsked then
+        text = text ..
+            "By figuring out the true intentions of the alien you have [rainbow=5]saved earth[/rainbow][waitforinput]\n" ..
+            "[shake=10]Thanks for playing[/shake]"
+    else
+        text = text ..
+            "By not finding the truth [dropshadow=10]inside[/dropshadow] the alien [color=#ff0000]earth is destoryed[/color][waitforinput]\n" ..
+            "[shake=10]Click to restart[/shake]"
+    end
+    self.text = text
+    self.dialogue:send(self.text, G_gameWidth)
 end
 
-function IntroScene:update(dt)
+function OutroScene:update(dt)
     self.dialogue:update(dt)
     if self.dialogue:is_finished() then
         MouseManager:setHover(true)
         if InputManager:released(InputManager.controls.select) then
             MouseManager:setHover(false)
             self.dialogue:continue()
-            if self.dialogue:is_finished() then
+            if self.dialogue:is_finished() and G_answersCorrect < G_realQuestionsAsked then
+                SceneManager:fullReset()
                 SceneManager:setScene(SceneManager.scenes.selectTruthOrLie)
             end
         end
@@ -46,11 +62,10 @@ function IntroScene:update(dt)
     end
 end
 
-function IntroScene:draw()
+function OutroScene:draw()
     -- love.graphics.draw(ImageManager.images.conceptSprite, 0, 0)
-    local x, y = Push:toReal(0, 0)
     love.graphics.push()
-    love.graphics.translate(0, 8)
+    love.graphics.translate(0, 30)
     self.dialogue:draw(0, 0)
 
     love.graphics.pop()
@@ -59,4 +74,4 @@ function IntroScene:draw()
     end
 end
 
-return IntroScene
+return OutroScene

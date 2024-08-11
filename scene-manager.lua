@@ -10,13 +10,16 @@ SceneManager.scenes = {
     selectALie = 'selectALie',
     truthAnswer = 'truthAnswer',
     lieAnswer = 'lieAnswer',
+    isThisTruth = 'isThisTruth',
+    outro = 'outro',
 }
 
 function SceneManager:init(scenes)
-    self.currentScene = SceneManager.scenes.intro
+    self.currentScene = SceneManager.scenes.finalQuestions
     for key, value in pairs(scenes) do
         self[key] = value
     end
+    -- self.isThisTruthScene:send("truth")
 end
 
 function SceneManager:update(dt)
@@ -40,11 +43,29 @@ function SceneManager:update(dt)
         SceneManager.finalSelectionScene:update(dt)
     elseif currentScene == SceneManager.scenes.finalAnswer then
         SceneManager.finalAnswerScene:update(dt)
+    elseif currentScene == SceneManager.scenes.isThisTruth then
+        SceneManager.isThisTruthScene:update(dt)
+    elseif currentScene == SceneManager.scenes.outro then
+        SceneManager.outroScene:update(dt)
     end
 end
 
 function SceneManager:getScene()
     return self.currentScene
+end
+
+function SceneManager:fullReset()
+    print("fully resetting")
+    self.finalSelectionScene:fullReset()
+    G_currentTime = love.timer.getTime()
+    G_questionsAsked = 0
+    G_realQuestionsAsked = 0
+    G_answersCorrect = 0
+    G_emotions = {
+        lieness = 0.5,
+        nervousness = 0.1,
+        anger = 1.0,
+    }
 end
 
 function SceneManager:setScene(scene, variables)
@@ -54,39 +75,26 @@ function SceneManager:setScene(scene, variables)
 
     if scene == SceneManager.scenes.intro then
         self.introScene:reset()
-    end
-
-    if scene == SceneManager.scenes.selectTruthOrLie then
+    elseif scene == SceneManager.scenes.selectTruthOrLie then
         self.selectTruthOrLieScene:reset()
-    end
-
-    if scene == SceneManager.scenes.finalQuestions then
+    elseif scene == SceneManager.scenes.finalQuestions then
         self.finalQuestionScene:reset()
-    end
-
-    if scene == SceneManager.scenes.finalSelection then
+    elseif scene == SceneManager.scenes.finalSelection then
         self.finalSelectionScene:reset()
-    end
-    if scene == SceneManager.scenes.selectATruth then
+    elseif scene == SceneManager.scenes.selectATruth then
         self.truthSelectionScene:reset()
-    end
-
-    if scene == SceneManager.scenes.selectALie then
+    elseif scene == SceneManager.scenes.selectALie then
         self.lieSelectionScene:reset()
-    end
-
-    if scene == SceneManager.scenes.truthAnswer then
+    elseif scene == SceneManager.scenes.truthAnswer then
         self.truthAnswerScene:send(variables.query)
-    end
-
-    if scene == SceneManager.scenes.lieAnswer then
+    elseif scene == SceneManager.scenes.lieAnswer then
         self.lieAnswerScene:send(variables.query)
-    end
-
-
-
-    if scene == SceneManager.scenes.finalAnswer then
+    elseif scene == SceneManager.scenes.finalAnswer then
         self.finalAnswerScene:send(variables.query)
+    elseif scene == SceneManager.scenes.isThisTruth then
+        self.isThisTruthScene:send(variables.answer)
+    elseif scene == SceneManager.scenes.outro then
+        self.outroScene:reset()
     end
 end
 
@@ -109,6 +117,10 @@ function SceneManager:draw()
         SceneManager.finalSelectionScene:draw()
     elseif self.currentScene == SceneManager.scenes.finalAnswer then
         SceneManager.finalAnswerScene:draw()
+    elseif self.currentScene == SceneManager.scenes.isThisTruth then
+        SceneManager.isThisTruthScene:draw()
+    elseif self.currentScene == SceneManager.scenes.outro then
+        SceneManager.outroScene:draw()
     else
         love.graphics.print("Error Empty Scene", 42, G_gameHeight / 2)
     end

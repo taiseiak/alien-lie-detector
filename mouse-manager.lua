@@ -42,8 +42,9 @@ function MouseManager:setBorders(width, height)
 end
 
 function MouseManager:draw()
-    local x, y = love.mouse.getPosition()
-    x, y = x + self.borderWidth, y + self.borderHeight
+    local ox, oy = love.mouse.getPosition()
+    local x, y = Push:toGame(ox, oy)
+    -- x, y = x + self.borderWidth, y + self.borderHeight
     -- if self.vector.x == -10 and self.vector.y == -10 then
     --     return
     -- end
@@ -52,9 +53,9 @@ function MouseManager:draw()
     if self.vector.x and self.vector.y then
         -- love.graphics.draw(self.sprite, math.floor(self.vector.x), math.floor(self.vector.y))
         if self.hovering then
-            love.graphics.draw(ImageManager.images.hoverCursor, x, y, 0, self.scaleFactor)
+            love.graphics.draw(ImageManager.images.hoverCursor, x, y)
         else
-            love.graphics.draw(ImageManager.images.cursor, x, y, 0, self.scaleFactor)
+            love.graphics.draw(ImageManager.images.cursor, x, y)
         end
     end
 end

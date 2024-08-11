@@ -16,16 +16,26 @@ local LieAnswerScene = require("scenes.lie-answer-scene")
 local FinalQuestionScene = require("scenes.final-questions-scene")
 local FinalSelectionScene = require("scenes.final-selection-scene")
 local FinalAnswerScene = require("scenes.final-answers-scene")
+local IsThisTruthScene = require("scenes.is-this-truth-scene")
+local OutroScene = require("scenes.outro-scene")
 
 G_gameWidth, G_gameHeight = 160, 90
 G_currentTime = 0
 G_questionsAsked = 0
+G_maxQuestions = 4
+G_realQuestionsAsked = 0
+G_answersCorrect = 0
+G_shader = nil
+G_emotions = {
+    lieness = 0.5,
+    nervousness = 0.1,
+    anger = 1.0,
+}
 
 -- [Optimizing locals] --
 local love = love
 
 -- [Locals] --
-local skyShader
 local startTime
 
 -- [2bit demichrome Palette](https://lospec.com/palette-list/2bit-demichrome)
@@ -60,8 +70,17 @@ function love.load()
         lieAnswerScene = LieAnswerScene.new(),
         finalQuestionScene = FinalQuestionScene.new(),
         finalSelectionScene = FinalSelectionScene.new(),
-        finalAnswerScene = FinalAnswerScene.new()
+        finalAnswerScene = FinalAnswerScene.new(),
+        isThisTruthScene = IsThisTruthScene.new(),
+        outroScene = OutroScene.new()
     })
+
+    G_shader = love.graphics.newShader("shaders/lie-shader.fs")
+    G_emotions = {
+        lieness = 0.5,
+        nervousness = 0.1,
+        anger = 1.0,
+    }
 
     startTime = love.timer.getTime()
 
@@ -90,7 +109,6 @@ function love.load()
 
     Push:setupCanvas({ name = "main" })
 
-    skyShader = love.graphics.newShader("shaders/sky-shader.fs")
 
     -- SceneManager:setScene(SceneManager.scenes.truthAnswer, { query = "Are you an alien?" })
 end
@@ -107,6 +125,11 @@ function love.update(dt)
     MouseManager:update()
     SceneManager:update(dt)
 
+    G_shader:send("time", G_currentTime)
+    G_shader:send("lieness", G_emotions.lieness)
+    G_shader:send("nervousness", G_emotions.nervousness)
+    G_shader:send("anger", G_emotions.anger)
+
     -- skyShader:send("time", G_currentTime)
 end
 
@@ -117,11 +140,7 @@ function love.draw()
 
     SceneManager:draw()
 
-    -- love.graphics.setShader(skyShader)
-    -- love.graphics.draw(ImageManager.images.detectorOutput, 51, 61)
-    -- love.graphics.setShader()
-
+    MouseManager:draw()
     Push:apply("end")
     -- Mouse
-    MouseManager:draw()
 end

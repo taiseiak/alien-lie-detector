@@ -1,4 +1,5 @@
 local Text = require("assets.library.slog-text")
+local Timer = require("assets.library.timer")
 
 local SceneManager = require('scene-manager')
 local InputManager = require('input-manager')
@@ -18,9 +19,7 @@ function TruthAnswerScene.new()
                 shadow_color = Demichrome_palatte[2]
             }),
         dialogueBoxSprite = ImageManager.images.dialogueBoxSprite,
-        skyShader = love.graphics.newShader("shaders/sky-shader.fs")
     }
-
     setmetatable(self, TruthAnswerScene)
     return self
 end
@@ -29,10 +28,25 @@ function TruthAnswerScene:send(query)
     self.query = query
     if query == "Are you an alien?" then
         self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. YES.[/shake][/rainbow]", 90)
+        Timer.tween(1, G_emotions, {
+            lieness = .2,
+            nervousness = 0.8,
+            anger = 1.0,
+        }, 'in-out-quad')
     elseif query == "Are you taking a lie detector?" then
         self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. OBVIOUSLY, YES.[/shake][/rainbow]", 90)
+        Timer.tween(1, G_emotions, {
+            lieness = .1,
+            nervousness = 0.5,
+            anger = 1.0,
+        }, 'in-out-quad')
     elseif query == "Are you having fun?" then
         self.text:send("[color=#ff0000]NO.[pause=0.7] WHY WOULD  I[/color]", 90)
+        Timer.tween(1, G_emotions, {
+            lieness = .3,
+            nervousness = 0.1,
+            anger = 5.0,
+        }, 'in-out-quad')
     else
         self.text:send("[shake=1]. [pause=0.7]. [pause=0.7]. Yes.[/shake]", 90)
     end
@@ -42,7 +56,7 @@ function TruthAnswerScene:update(dt)
     if not self.query then
         return
     end
-    self.skyShader:send("time", G_currentTime)
+    Timer.update(dt)
     self.text:update(dt)
     if self.text:is_finished() then
         MouseManager:setHover(true)
@@ -50,7 +64,7 @@ function TruthAnswerScene:update(dt)
     if self.text:is_finished() and InputManager:released(InputManager.controls.select) then
         MouseManager:setHover(false)
         G_questionsAsked = G_questionsAsked + 1
-        if G_questionsAsked > 3 then
+        if G_questionsAsked >= G_maxQuestions then
             SceneManager:setScene(SceneManager.scenes.finalQuestions)
         else
             SceneManager:setScene(SceneManager.scenes.selectTruthOrLie)
@@ -89,7 +103,7 @@ function TruthAnswerScene:draw()
     end
     love.graphics.pop()
 
-    love.graphics.setShader(self.skyShader)
+    love.graphics.setShader(G_shader)
     love.graphics.draw(ImageManager.images.detectorOutput, 51, 61)
     love.graphics.setShader()
 end

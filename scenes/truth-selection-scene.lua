@@ -1,3 +1,5 @@
+local Timer = require("assets.library.timer")
+
 local SelectionBox = require('selection-box')
 local SceneManager = require('scene-manager')
 local ImageManager = require('image-manager')
@@ -20,6 +22,11 @@ function TruthSelectionScene.new()
                 function() SceneManager:setScene(SceneManager.scenes.truthAnswer, { query = "Are you having fun?" }) end),
         }
     }
+    Timer.tween(1, G_emotions, {
+        lieness = .5,
+        nervousness = 0.1,
+        anger = 1.0,
+    }, 'in-out-quad')
     self.selectionBoxes.selection1:send("Are you an alien?", 90)
     self.selectionBoxes.selection2:send("[textspeed=0.01]Are you taking a lie detector?[/textspeed]", 90)
     self.selectionBoxes.selection3:send("Are you having fun?", 90)
@@ -28,6 +35,11 @@ function TruthSelectionScene.new()
 end
 
 function TruthSelectionScene:reset()
+    Timer.tween(1, G_emotions, {
+        lieness = .5,
+        nervousness = 0.1,
+        anger = 1.0,
+    }, 'in-out-quad')
     self.selectionBoxes.selection1:send("Are you an alien?", 90)
     self.selectionBoxes.selection2:send("[textspeed=0.01]Are you taking a lie detector?[/textspeed]", 90)
     self.selectionBoxes.selection3:send("Are you having fun?", 90)
@@ -37,6 +49,7 @@ function TruthSelectionScene:update(dt)
     for _, box in pairs(self.selectionBoxes) do
         box:update(dt)
     end
+    Timer.update(dt)
 end
 
 function TruthSelectionScene:draw()
@@ -47,6 +60,9 @@ function TruthSelectionScene:draw()
     for _, box in pairs(self.selectionBoxes) do
         box:draw()
     end
+    love.graphics.setShader(G_shader)
+    love.graphics.draw(ImageManager.images.detectorOutput, 51, 61)
+    love.graphics.setShader()
 end
 
 return TruthSelectionScene
