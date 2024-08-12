@@ -5,6 +5,7 @@ local SceneManager = require('scene-manager')
 local InputManager = require('input-manager')
 local ImageManager = require('image-manager')
 local MouseManager = require('mouse-manager')
+local SoundManager = require('sound-manager')
 
 local LieAnswerScene = {}
 LieAnswerScene.__index = LieAnswerScene
@@ -14,9 +15,12 @@ function LieAnswerScene.new()
         text = Text.new("center",
             {
                 color = Demichrome_palatte[4],
-                print_speed = 0.1,
+                print_speed = 0.05,
                 font = Fonts.comic_neue,
-                shadow_color = Demichrome_palatte[2]
+                shadow_color = Demichrome_palatte[2],
+                character_sound = true,
+                sound_every = 1,
+                sound_number = 1,
             }),
         dialogueBoxSprite = ImageManager.images.dialogueBoxSprite,
     }
@@ -28,7 +32,7 @@ end
 function LieAnswerScene:send(query)
     self.query = query
     if query == "Are you a fish?" then
-        self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. YES.[/shake][/rainbow]", 90)
+        self.text:send("[warble=3][rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. YES.[/shake][/rainbow][/warble]", 90)
         Timer.tween(1, G_emotions, {
             lieness = .95,
             nervousness = 0.2,
@@ -40,14 +44,14 @@ function LieAnswerScene:send(query)
             nervousness = 0.4,
             anger = 1.0,
         }, 'in-out-quad')
-        self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. NO.[/shake][/rainbow]", 90)
+        self.text:send("[warble=3][rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. NO.[/shake][/rainbow][/warble]", 90)
     elseif query == "Are you standing?" then
         Timer.tween(1, G_emotions, {
             lieness = .8,
             nervousness = 0.8,
             anger = 2.0,
         }, 'in-out-quad')
-        self.text:send("[rainbow=1][shake=5]I AM STANDING.[/shake][/rainbow]", 90)
+        self.text:send("[warble=3][rainbow=1][shake=5]I AM STANDING.[/shake][/rainbow][/warble]", 90)
     else
         self.text:send("[shake=1]. [pause=0.7]. [pause=0.7]. What?[/shake]", 90)
     end
@@ -64,6 +68,7 @@ function LieAnswerScene:update(dt)
     end
     if self.text:is_finished() and InputManager:released(InputManager.controls.select) then
         MouseManager:setHover(false)
+        SoundManager.sounds.selectionSound:play({ pitch = 0.5 })
         G_questionsAsked = G_questionsAsked + 1
         if G_questionsAsked >= G_maxQuestions then
             SceneManager:setScene(SceneManager.scenes.finalQuestions)

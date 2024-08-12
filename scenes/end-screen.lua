@@ -1,6 +1,9 @@
 local Text = require("assets.library.slog-text")
+local Timer = require("assets.library.timer")
 
 local ImageManager = require("image-manager")
+local SoundManager = require('sound-manager')
+
 
 local EndScreen = {}
 EndScreen.__index = EndScreen
@@ -8,6 +11,7 @@ EndScreen.dialogue = require("scenes.intro-text")
 
 function EndScreen.new()
     local self = {
+        blackOverlayAlpha = { 1 },
         dialogue = Text.new("center",
             {
                 color = Demichrome_palatte[4],
@@ -25,6 +29,8 @@ function EndScreen.new()
 end
 
 function EndScreen:reset()
+    Timer.tween(0.5, self.blackOverlayAlpha, { 0 }, 'linear')
+    if SoundManager.currentSound ~= nil then SoundManager.currentSound:resume() end
     local text =
     "[rainbow=5][shake=2]THANKS FOR PLAYING[/shake][/rainbow]"
     self.text = text
@@ -32,6 +38,7 @@ function EndScreen:reset()
 end
 
 function EndScreen:update(dt)
+    Timer.update(dt)
     G_emotions = {
         lieness = 0.99,
         nervousness = 0.99,
@@ -49,6 +56,9 @@ function EndScreen:draw()
     love.graphics.translate(65, 9)
     self.dialogue:draw(0, 0)
     love.graphics.pop()
+    love.graphics.setColor(0, 0, 0, self.blackOverlayAlpha[1])
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 return EndScreen

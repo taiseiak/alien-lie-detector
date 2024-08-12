@@ -20,7 +20,6 @@ function SceneManager:init(scenes)
     for key, value in pairs(scenes) do
         self[key] = value
     end
-    self.outroScene:reset()
 end
 
 function SceneManager:update(dt)
@@ -58,7 +57,6 @@ function SceneManager:getScene()
 end
 
 function SceneManager:fullReset()
-    print("fully resetting")
     self.finalSelectionScene:fullReset()
     G_currentTime = love.timer.getTime()
     G_questionsAsked = 0
@@ -72,14 +70,13 @@ function SceneManager:fullReset()
 end
 
 function SceneManager:setScene(scene, variables)
-    -- print("Scene switched from" .. self.currentScene .. " to " .. scene)
     self.currentScene = scene
     self.variables = variables
 
     if scene == SceneManager.scenes.intro then
         self.introScene:reset()
     elseif scene == SceneManager.scenes.selectTruthOrLie then
-        self.selectTruthOrLieScene:reset()
+        self.selectTruthOrLieScene:reset(variables)
     elseif scene == SceneManager.scenes.finalQuestions then
         self.finalQuestionScene:reset()
     elseif scene == SceneManager.scenes.finalSelection then

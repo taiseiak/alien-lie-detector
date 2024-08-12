@@ -1,6 +1,6 @@
 return [[
 Aliens have arrived on Earth[waitforinput]
-You have an [textspeed=0.1][rainbow=5]ALIEN LIE DETECTOR[/rainbow][/textspeed][waitforinput]
+You have an [soundevery=1][textspeed=0.1][rainbow=5]ALIEN LIE DETECTOR[/rainbow][/textspeed][/soundevery][waitforinput]
 The alien has the truth [dropshadow=10]inside[/dropshadow] them[waitforinput]
 Figure [dropshadow=10]out[/dropshadow] the answers to these questions[waitforinput]
 [dropshadow=2]Are you peaceful[/dropshadow][waitforinput]

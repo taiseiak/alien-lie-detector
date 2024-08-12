@@ -5,12 +5,14 @@ local Text = require("assets.library.slog-text")
 local SelectionBox = require('selection-box')
 local SceneManager = require('scene-manager')
 local ImageManager = require('image-manager')
+local SoundManager = require('sound-manager')
 
 local SelectTruthOrLieScene = {}
 SelectTruthOrLieScene.__index = SelectTruthOrLieScene
 
 function SelectTruthOrLieScene.new()
     local self = {
+        blackOverlayAlpha = { 1 },
         selectionBoxes = {
             questionsLeft = Text.new("center",
                 {
@@ -24,7 +26,10 @@ function SelectTruthOrLieScene.new()
                     color = Demichrome_palatte[4],
                     print_speed = 0.02,
                     font = Fonts.sparkly,
-                    shadow_color = Demichrome_palatte[2]
+                    shadow_color = Demichrome_palatte[2],
+                    character_sound = true,
+                    sound_every = 2,
+                    sound_number = 2,
                 }),
             truth = SelectionBox.new(
                 60,
@@ -50,7 +55,11 @@ function SelectTruthOrLieScene.new()
     return self
 end
 
-function SelectTruthOrLieScene:reset()
+function SelectTruthOrLieScene:reset(transition)
+    if transition then
+        self.blackOverlayAlpha[1] = 1
+        Timer.tween(0.5, self.blackOverlayAlpha, { 0 }, 'linear')
+    end
     Timer.tween(1, G_emotions, {
         lieness = 0.5,
         nervousness = 0.1,
@@ -66,6 +75,7 @@ function SelectTruthOrLieScene:reset()
     self.selectionBoxes.askAlien:send("Ask the alien to tell", 100)
     self.selectionBoxes.truth:send("the [color=#00ff00]TRUTH[/color=#00ff00]", 45)
     self.selectionBoxes.lie:send("a [color=#ff0000]LIE[/color=#00ff00]", 25)
+    SoundManager:queueSound("alienAbduction")
 end
 
 function SelectTruthOrLieScene:update(dt)
@@ -88,6 +98,9 @@ function SelectTruthOrLieScene:draw()
     love.graphics.setShader(G_shader)
     love.graphics.draw(ImageManager.images.detectorOutput, 51, 61)
     love.graphics.setShader()
+    love.graphics.setColor(0, 0, 0, self.blackOverlayAlpha[1])
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 return SelectTruthOrLieScene

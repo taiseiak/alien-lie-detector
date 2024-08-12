@@ -5,6 +5,7 @@ local SceneManager = require('scene-manager')
 local InputManager = require('input-manager')
 local ImageManager = require('image-manager')
 local MouseManager = require('mouse-manager')
+local SoundManager = require('sound-manager')
 
 local FinalAnswerScene = {}
 FinalAnswerScene.__index = FinalAnswerScene
@@ -16,7 +17,10 @@ function FinalAnswerScene.new()
                 color = Demichrome_palatte[4],
                 print_speed = 0.1,
                 font = Fonts.comic_neue,
-                shadow_color = Demichrome_palatte[2]
+                shadow_color = Demichrome_palatte[2],
+                character_sound = true,
+                sound_every = 1,
+                sound_number = 1,
             }),
         dialogueBoxSprite = ImageManager.images.dialogueBoxSprite,
     }
@@ -28,7 +32,7 @@ end
 function FinalAnswerScene:send(query)
     self.query = query
     if query == "Are you peaceful?" then
-        self.text:send("[color=#ff0000]. [pause=0.7]. [pause=0.7]. YES.[/color]", 90)
+        self.text:send("[warble=1][color=#ff0000]. [pause=0.7]. [pause=0.7]. YES.[/color][/warble]", 90)
         Timer.tween(1, G_emotions, {
             lieness = .2,
             nervousness = 0.99,
@@ -40,7 +44,7 @@ function FinalAnswerScene:send(query)
             nervousness = 0.85,
             anger = 3.0,
         }, 'in-out-quad')
-        self.text:send("[color=#ff0000]. [pause=0.7]. [pause=0.7]. NO.[/color]", 90)
+        self.text:send("[warble=1][color=#ff0000]. [pause=0.7]. [pause=0.7]. NO.[/color][/warble]", 90)
     elseif query == "Do you have weapons?" then
         Timer.tween(1, G_emotions, {
             lieness = .3,
@@ -65,6 +69,7 @@ function FinalAnswerScene:update(dt)
     if self.text:is_finished() and InputManager:released(InputManager.controls.select) then
         MouseManager:setHover(false)
         G_realQuestionsAsked = G_realQuestionsAsked + 1
+        SoundManager.sounds.selectionSound:play({ pitch = 0.5 })
         local answer
         if self.query == "Are you peaceful?" then
             answer = "truth"

@@ -1,4 +1,5 @@
 local Text = require("assets.library.slog-text")
+local Timer = require("assets.library.timer")
 
 local SelectionBox = require('selection-box')
 local SceneManager = require('scene-manager')
@@ -12,6 +13,7 @@ function IsThisTruthScene.new()
     local startPointY = (G_gameHeight - ImageManager.images.isThisTruth:getHeight()) / 2
 
     local self = {
+        blackOverlayAlpha = { 0 },
         x = startPointX,
         y = startPointY,
         alienTold = Text.new("center",
@@ -19,7 +21,10 @@ function IsThisTruthScene.new()
                 color = Demichrome_palatte[4],
                 print_speed = 0.02,
                 font = Fonts.sparkly,
-                shadow_color = Demichrome_palatte[2]
+                shadow_color = Demichrome_palatte[2],
+                character_sound = true,
+                sound_every = 2,
+                sound_number = 2,
             }),
         truth = SelectionBox.new(startPointX + 15, startPointY + 35),
         lie = SelectionBox.new(startPointX + 80, startPointY + 35),
@@ -34,18 +39,21 @@ function IsThisTruthScene.new()
 end
 
 function IsThisTruthScene:send(answer)
+    self.blackOverlayAlpha = { 0 }
     self.answer = answer
     local correctCallback = function()
         G_answersCorrect = G_answersCorrect + 1
         if G_realQuestionsAsked >= 3 then
-            SceneManager:setScene(SceneManager.scenes.outro)
+            Timer.tween(0.5, self.blackOverlayAlpha, { 1 }, 'linear',
+                function() SceneManager:setScene(SceneManager.scenes.outro) end)
         else
             SceneManager:setScene(SceneManager.scenes.finalQuestions)
         end
     end
     local incorrectCallback = function()
         if G_realQuestionsAsked >= 3 then
-            SceneManager:setScene(SceneManager.scenes.outro)
+            Timer.tween(0.5, self.blackOverlayAlpha, { 1 }, 'linear',
+                function() SceneManager:setScene(SceneManager.scenes.outro) end)
         else
             SceneManager:setScene(SceneManager.scenes.finalQuestions)
         end
@@ -61,6 +69,7 @@ function IsThisTruthScene:send(answer)
 end
 
 function IsThisTruthScene:update(dt)
+    Timer.update(dt)
     if not self.answer then
         return
     end
@@ -93,6 +102,9 @@ function IsThisTruthScene:draw()
         self.truth:draw()
         self.lie:draw()
     end
+    love.graphics.setColor(0, 0, 0, self.blackOverlayAlpha[1])
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 return IsThisTruthScene

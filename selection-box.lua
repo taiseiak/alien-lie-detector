@@ -2,6 +2,7 @@ local Text = require("assets.library.slog-text")
 
 local InputManager = require("input-manager")
 local MouseManager = require("mouse-manager")
+local SoundManager = require("sound-manager")
 
 local SelectionBox = {}
 SelectionBox.__index = SelectionBox
@@ -19,7 +20,10 @@ function SelectionBox.new(x, y, callback, disabled)
                 color = Demichrome_palatte[4],
                 print_speed = 0.02,
                 font = Fonts.sparkly,
-                shadow_color = Demichrome_palatte[2]
+                shadow_color = Demichrome_palatte[2],
+                character_sound = true,
+                sound_every = 2,
+                sound_number = 2,
             }),
         hoverTextBox = Text.new("left",
             {
@@ -50,8 +54,12 @@ function SelectionBox:update(dt)
     then
         if InputManager:released(InputManager.controls.select) and self.callback then
             MouseManager:setHover(false)
+            SoundManager.sounds.selectionSound:play()
             self.callback()
         else
+            if self.hovering == false then
+                SoundManager.sounds.selectionSound:play({ pitch = 0.4 })
+            end
             self.hovering = true
             MouseManager:setHover(true)
         end

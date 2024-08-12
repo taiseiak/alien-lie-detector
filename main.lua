@@ -5,6 +5,7 @@ local InputManager = require("input-manager")
 local MouseManager = require("mouse-manager")
 local SceneManager = require("scene-manager")
 local ImageManager = require("image-manager")
+local SoundManager = require("sound-manager")
 
 -- [Scenes] --
 local IntroScene = require('scenes.intro-scene')
@@ -47,6 +48,13 @@ Demichrome_palatte = {
     { 0.914, 0.937, 0.925, 1.0 }  -- #e9efec
 }
 
+Audio = {
+    text = {
+        defaultAlien = love.audio.newSource("assets/sounds/TN 39.wav", "static"),
+        ch20 = love.audio.newSource("assets/sounds/CH 20.wav", "static"),
+    }
+}
+
 love.mouse.setVisible(false)
 
 
@@ -59,9 +67,12 @@ function love.load()
         sparkly = love.graphics.newFont("assets/font/SparklyFontRegular.ttf", 8, "mono")
     }
     Text.configure.font_table("Fonts")
+    Text.configure.add_text_sound(Audio.text.defaultAlien, 0.2)
+    Text.configure.add_text_sound(Audio.text.ch20, 0.2)
     ImageManager:init()
     InputManager:init()
     MouseManager:init()
+    SoundManager:init()
     SceneManager:init({
         introScene = IntroScene.new(),
         selectTruthOrLieScene = SelectTruthOrLieScene:new(),
@@ -97,7 +108,7 @@ function love.load()
     local windowWidth, windowHeight = love.window.getDesktopDimensions()
     windowWidth, windowHeight = windowWidth * 0.8, windowHeight * 0.8
     Push:setupScreen(G_gameWidth, G_gameHeight, windowWidth, windowHeight,
-        { fullscreen = false, highdpi = true, pixelperfect = false, resizable = true })
+        { fullscreen = false, highdpi = true, pixelperfect = false, resizable = false })
 
     -- [Calculate scaling factors] --
     local scaleX = windowWidth / G_gameWidth
@@ -126,6 +137,7 @@ function love.update(dt)
     InputManager:update()
     MouseManager:update()
     SceneManager:update(dt)
+    SoundManager:update(dt)
 
     G_shader:send("time", G_currentTime)
     G_shader:send("lieness", G_emotions.lieness)

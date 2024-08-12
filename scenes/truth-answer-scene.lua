@@ -5,6 +5,7 @@ local SceneManager = require('scene-manager')
 local InputManager = require('input-manager')
 local ImageManager = require('image-manager')
 local MouseManager = require('mouse-manager')
+local SoundManager = require('sound-manager')
 
 local TruthAnswerScene = {}
 TruthAnswerScene.__index = TruthAnswerScene
@@ -14,9 +15,12 @@ function TruthAnswerScene.new()
         text = Text.new("center",
             {
                 color = Demichrome_palatte[4],
-                print_speed = 0.1,
+                print_speed = 0.05,
                 font = Fonts.comic_neue,
-                shadow_color = Demichrome_palatte[2]
+                shadow_color = Demichrome_palatte[2],
+                character_sound = true,
+                sound_every = 1,
+                sound_number = 1,
             }),
         dialogueBoxSprite = ImageManager.images.dialogueBoxSprite,
     }
@@ -27,14 +31,15 @@ end
 function TruthAnswerScene:send(query)
     self.query = query
     if query == "Are you an alien?" then
-        self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. YES.[/shake][/rainbow]", 90)
+        self.text:send("[warble=3][rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. YES.[/shake][/rainbow][/warble]", 90)
         Timer.tween(1, G_emotions, {
             lieness = .2,
             nervousness = 0.8,
             anger = 1.0,
         }, 'in-out-quad')
     elseif query == "Are you taking a lie detector?" then
-        self.text:send("[rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. OBVIOUSLY, YES.[/shake][/rainbow]", 90)
+        self.text:send(
+            "[warble=3][rainbow=1][shake=5]. [pause=0.7]. [pause=0.7]. OBVIOUSLY, YES.[/shake][/rainbow][/warble]", 90)
         Timer.tween(1, G_emotions, {
             lieness = .1,
             nervousness = 0.5,
@@ -64,6 +69,7 @@ function TruthAnswerScene:update(dt)
     if self.text:is_finished() and InputManager:released(InputManager.controls.select) then
         MouseManager:setHover(false)
         G_questionsAsked = G_questionsAsked + 1
+        SoundManager.sounds.selectionSound:play({ pitch = 0.5 })
         if G_questionsAsked >= G_maxQuestions then
             SceneManager:setScene(SceneManager.scenes.finalQuestions)
         else
